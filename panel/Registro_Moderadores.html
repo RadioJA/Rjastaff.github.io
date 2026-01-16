@@ -152,11 +152,6 @@
         }
 
         async function apiGetAll() {
-            if (!isLocal) {
-                const res = await fetch('../database/moderadores.php');
-                if (!res.ok) throw new Error(await res.text());
-                return res.json();
-            }
             return JSON.parse(localStorage.getItem(storageKey) || '[]');
         }
 
@@ -224,7 +219,17 @@
                 dias_moderacion: obtenerCategoria()
             };
 
-            localStorage.setItem("registro", JSON.stringify(registro));
+            // Obtener lista actual
+            let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            // Generar ID único
+            registro.id = registros.length ? Math.max(...registros.map(r => r.id || 0)) + 1 : 1;
+            
+            // Agregar nuevo registro
+            registros.push(registro);
+            
+            // Guardar en localStorage
+            localStorage.setItem(storageKey, JSON.stringify(registros));
             alert("Registro guardado localmente");
             limpiarFormulario();
             actualizarTabla();
