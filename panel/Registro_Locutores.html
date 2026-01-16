@@ -245,27 +245,10 @@
                 cantoTema: document.getElementById('cantoTema') ? document.getElementById('cantoTema').value : ''
             };
 
-            const editId = document.getElementById('editIndex').value;
-            try {
-                let result;
-                if (editId && editId !== '-1') {
-                    registro.id = parseInt(editId);
-                    result = await apiUpdate(registro);
-                } else {
-                    result = await apiCreate(registro);
-                }
-
-                if (result.success) {
-                    alert(result.message || 'Guardado');
-                    limpiarFormulario();
-                    actualizarTabla();
-                } else {
-                    alert('Error: ' + (result.message || ''));
-                }
-            } catch (error) {
-                console.error('Guardar error:', error);
-                alert('Error al guardar el registro: ' + (error.message || error));
-            }
+            localStorage.setItem("registro", JSON.stringify(registro));
+            alert("Registro guardado localmente");
+            limpiarFormulario();
+            actualizarTabla();
         }
 
         async function actualizarTabla() {
