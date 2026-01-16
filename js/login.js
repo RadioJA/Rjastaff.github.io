@@ -10,7 +10,7 @@ const users = [
 
     //Usuarios Directores Lunes a Viernes
     { username: 'Xiomara', password: 'xlv5-7am', role: 'dh' },
-    { username: 'Karina', password: 'klv7-9am', role: 'dh' },
+    //{ username: 'Karina', password: 'klv7-9am', role: 'dh' },
     { username: 'Valeria', password: 'lv9-11am', role: 'dh' },
     { username: 'Maria', password: 'mlv11-1pm', role: 'dh' },
     { username: 'Aleida', password: 'alv1-3pm', role: 'dh' },
