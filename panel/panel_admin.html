@@ -109,6 +109,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Cumpleaños del Mes</h5>
                                 <p class="card-text display-6">5</p>
+                                <div id="cumpleañosMesLista" style="margin-top: 1rem; font-size: 0.9rem; max-height: 150px; overflow-y: auto;"></div>
                             </div>
                         </div>
                     </div>
@@ -193,11 +194,10 @@
             activityLog.appendChild(row);
         });
 
-        // Obtener total de cumpleaños del DÍA actual desde directores, locutores y moderadores
-        async function obtenerTotalCumpleañosDia() {
+        // Obtener cumpleaños del MES actual desde directores, locutores y moderadores
+        async function obtenerCumpleañosMes() {
             const today = new Date();
-            const day = today.getDate();
-            const month = today.getMonth() + 1; // 1-12
+            const currentMonth = today.getMonth() + 1; // 1-12
             const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
             function parseDateField(item) {
@@ -229,31 +229,56 @@
                 fetchData('moderadores_data', '../database/moderadores.php')
             ]);
 
-            let total = 0;
+            const cumpleañosMes = [];
 
-            [directores, locutores, moderadores].forEach(list => {
-                (list || []).forEach(item => {
+            [
+                { data: directores, tipo: 'Director' },
+                { data: locutores, tipo: 'Locutor' },
+                { data: moderadores, tipo: 'Moderador' }
+            ].forEach(({ data, tipo }) => {
+                (data || []).forEach(item => {
                     const dateStr = parseDateField(item);
                     if (!dateStr) return;
                     const parts = dateStr.split('-');
                     if (parts.length < 3) return;
                     const d = parseInt(parts[2], 10);
                     const m = parseInt(parts[1], 10);
-                    if (d === day && m === month) total += 1;
+                    if (m === currentMonth) {
+                        cumpleañosMes.push({
+                            nombre: (item.nombre || '') + (item.apellido ? ' ' + item.apellido : ''),
+                            dia: d,
+                            tipo: tipo
+                        });
+                    }
                 });
             });
 
-            return total;
+            // Ordenar por día
+            cumpleañosMes.sort((a, b) => a.dia - b.dia);
+            return cumpleañosMes;
         }
 
-        // Función para actualizar los contadores
+        // Función para actualizar los contadores y mostrar cumpleaños
         async function actualizarContadores() {
-            const totalCumpleaños = await obtenerTotalCumpleañosDia();
+            const cumpleañosMes = await obtenerCumpleañosMes();
             const reportesPendientes = calcularReportesPendientes();
 
             // Actualizar contador de cumpleaños (3er card)
             const elems = document.querySelectorAll('.card-text.display-6');
-            if (elems && elems[2]) elems[2].textContent = totalCumpleaños;
+            if (elems && elems[2]) elems[2].textContent = cumpleañosMes.length;
+            
+            // Mostrar lista de cumpleaños
+            const containerCumpleaños = document.getElementById('cumpleañosMesLista');
+            if (containerCumpleaños) {
+                if (cumpleañosMes.length === 0) {
+                    containerCumpleaños.innerHTML = '<p style="color: #999;">No hay cumpleaños este mes</p>';
+                } else {
+                    containerCumpleaños.innerHTML = cumpleañosMes.map(c => 
+                        `<p style="margin: 0.3rem 0;"><strong>${c.dia}</strong> - ${c.nombre} (${c.tipo})</p>`
+                    ).join('');
+                }
+            }
+            
             // Actualizar contador de reportes pendientes (2nd card)
             if (elems && elems[1]) elems[1].textContent = reportesPendientes;
         }
