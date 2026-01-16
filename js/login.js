@@ -6,7 +6,7 @@ const users = [
     { username: 'Juan', password: 'jcmdl', role: 'directiva' },
     { username: 'Anne', password: 'aasg', role: 'directiva' },
     { username: 'Rosario', password: 'rbddh', role: 'directiva' },
-    { username: 'karina', password: 'kcsg', role: 'directiva' },
+    { username: 'Karina', password: 'kcsg', role: 'directiva' },
 
     //Usuarios Directores Lunes a Viernes
     { username: 'Xiomara', password: 'xlv5-7am', role: 'dh' },
