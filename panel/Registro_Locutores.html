@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Locutores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .container { max-width: 1200px; }
+        .form-container { background-color: #f8f9fa; padding: 20px; border-radius: 10px; }
+        .table-container { margin-top: 30px; }
+        .btn-action { margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Registro de Programación</h2>
+            <a href="../panel/panel_admin.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Menú
+            </a>
+        </div>
+        <div class="form-container">
+            <form id="registroForm">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="horaInicio" class="form-label">Hora de Inicio</label>
+                        <div class="d-flex">
+                            <input type="time" class="form-control" id="horaInicio" required>
+                            <select class="form-select ms-2" id="periodoInicio" style="width: auto;">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="horaFin" class="form-label">Hora de Fin</label>
+                        <div class="d-flex">
+                            <input type="time" class="form-control" id="horaFin" required>
+                            <select class="form-select ms-2" id="periodoFin" style="width: auto;">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Categoría</label>
+                        <div class="form-control" style="height: auto;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Domingo" id="catDomingo">
+                                <label class="form-check-label" for="catDomingo">Domingo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Lunes" id="catLunes">
+                                <label class="form-check-label" for="catLunes">Lunes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Martes" id="catMartes">
+                                <label class="form-check-label" for="catMartes">Martes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Miércoles" id="catMiercoles">
+                                <label class="form-check-label" for="catMiercoles">Miércoles</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Jueves" id="catJueves">
+                                <label class="form-check-label" for="catJueves">Jueves</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Viernes" id="catViernes">
+                                <label class="form-check-label" for="catViernes">Viernes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Sábado" id="catSabado">
+                                <label class="form-check-label" for="catSabado">Sábado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Sábados y Domingos" id="catSabadosDomingos">
+                                <label class="form-check-label" for="catSabadosDomingos">Sábados y Domingos</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Lunes a Viernes" id="catLunesViernes">
+                                <label class="form-check-label" for="catLunesViernes">Lunes a Viernes</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellido">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cumpleanos" class="form-label">Fecha de Cumpleaños</label>
+                        <input type="date" class="form-control" id="cumpleanos" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="programa" class="form-label">Programa</label>
+                        <input type="text" class="form-control" id="programa" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="slogan" class="form-label">Slogan</label>
+                        <input type="text" class="form-control" id="slogan" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="cantoTema" class="form-label">Canto Tema</label>
+                    <input type="text" class="form-control" id="cantoTema" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
+                    <button type="button" class="btn btn-success" onclick="exportarPDF()"><i class="fas fa-file-pdf"></i> Exportar a PDF</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Categoría</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Fecha de Cumpleaños</th>
+                        <th>Programa</th>
+                        <th>Slogan</th>
+                        <th>Canto Tema</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosTabla"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const isLocal = window.location.protocol === 'file:';
+        const storageKey = 'locutores_data';
+
+        function obtenerCategoria() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value).join(', ');
+        }
+
+        function validarFormulario() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const cumpleanos = document.getElementById('cumpleanos').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+            const diasSeleccionados = obtenerCategoria();
+
+            if (!nombre || !cumpleanos || !horaInicio || !horaFin || !diasSeleccionados) {
+                alert('Por favor, complete todos los campos obligatorios.');
+                return false;
+            }
+            return true;
+        }
+
+        async function apiGetAll() {
+            if (!isLocal) {
+                const res = await fetch('../database/locutores.php');
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            }
+            return JSON.parse(localStorage.getItem(storageKey) || '[]');
+        }
+
+        async function apiCreate(item) {
+            if (!isLocal) {
+                const res = await fetch('../database/locutores.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(item) });
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            }
+            const arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            item.id = arr.length ? Math.max(...arr.map(r => r.id || 0)) + 1 : 1;
+            arr.push(item);
+            localStorage.setItem(storageKey, JSON.stringify(arr));
+            return { success: true, message: 'Guardado localmente', id: item.id };
+        }
+
+        async function apiUpdate(item) {
+            if (!isLocal) {
+                const res = await fetch('../database/locutores.php', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(item) });
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            }
+            const arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const idx = arr.findIndex(r => r.id === item.id);
+            if (idx === -1) return { success: false, message: 'No encontrado' };
+            arr[idx] = item;
+            localStorage.setItem(storageKey, JSON.stringify(arr));
+            return { success: true, message: 'Actualizado localmente' };
+        }
+
+        async function apiGetById(id) {
+            if (!isLocal) {
+                const res = await fetch(`../database/locutores.php?id=${id}`);
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            }
+            const arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            return arr.find(r => r.id === id) || null;
+        }
+
+        async function apiDelete(id) {
+            if (!isLocal) {
+                const res = await fetch('../database/locutores.php', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            }
+            let arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            arr = arr.filter(r => r.id !== id);
+            localStorage.setItem(storageKey, JSON.stringify(arr));
+            return { success: true, message: 'Eliminado localmente' };
+        }
+
+        async function guardarRegistro(e) {
+            e.preventDefault();
+            if (!validarFormulario()) return;
+
+            const registro = {
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido') ? document.getElementById('apellido').value : '',
+                fecha_nacimiento: document.getElementById('cumpleanos').value,
+                hora_inicio: document.getElementById('horaInicio').value,
+                hora_fin: document.getElementById('horaFin').value,
+                periodo_inicio: document.getElementById('periodoInicio').value,
+                periodo_fin: document.getElementById('periodoFin').value,
+                dias_trabajo: obtenerCategoria(),
+                programa: document.getElementById('programa') ? document.getElementById('programa').value : '',
+                slogan: document.getElementById('slogan') ? document.getElementById('slogan').value : '',
+                cantoTema: document.getElementById('cantoTema') ? document.getElementById('cantoTema').value : ''
+            };
+
+            const editId = document.getElementById('editIndex').value;
+            try {
+                let result;
+                if (editId && editId !== '-1') {
+                    registro.id = parseInt(editId);
+                    result = await apiUpdate(registro);
+                } else {
+                    result = await apiCreate(registro);
+                }
+
+                if (result.success) {
+                    alert(result.message || 'Guardado');
+                    limpiarFormulario();
+                    actualizarTabla();
+                } else {
+                    alert('Error: ' + (result.message || ''));
+                }
+            } catch (error) {
+                console.error('Guardar error:', error);
+                alert('Error al guardar el registro: ' + (error.message || error));
+            }
+        }
+
+        async function actualizarTabla() {
+            try {
+                const registros = await apiGetAll();
+                const tabla = document.getElementById('registrosTabla');
+                tabla.innerHTML = '';
+
+                const registrosPorCategoria = {};
+                registros.forEach(registro => {
+                    const categorias = (registro.dias_trabajo || '').split(', ');
+                    categorias.forEach(cat => {
+                        if (!registrosPorCategoria[cat]) registrosPorCategoria[cat] = [];
+                        registrosPorCategoria[cat].push(registro);
+                    });
+                });
+
+                const categoriasOrdenadas = Object.keys(registrosPorCategoria).sort();
+
+                categoriasOrdenadas.forEach(categoria => {
+                    const encabezadoCategoria = document.createElement('tr');
+                    encabezadoCategoria.innerHTML = `
+                        <td colspan="10" class="table-primary fw-bold">
+                            ${categoria}
+                        </td>
+                    `;
+                    tabla.appendChild(encabezadoCategoria);
+
+                    const registrosOrdenados = registrosPorCategoria[categoria].sort((a, b) => (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
+
+                    registrosOrdenados.forEach((registro, i) => {
+                        const fila = document.createElement('tr');
+                        fila.innerHTML = `
+                            <td>${i + 1}</td>
+                            <td>${registro.hora_inicio || ''}</td>
+                            <td>${registro.hora_fin || ''}</td>
+                            <td>${registro.dias_trabajo || ''}</td>
+                            <td>${registro.nombre || ''}</td>
+                            <td>${registro.apellido || ''}</td>
+                            <td>${registro.fecha_nacimiento || ''}</td>
+                            <td>
+                                <button onclick="editarRegistro(${registro.id})" class="btn btn-sm btn-warning">Editar</button>
+                                <button onclick="eliminarRegistro(${registro.id})" class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        `;
+                        tabla.appendChild(fila);
+                    });
+                });
+            } catch (error) {
+                console.error('Error al cargar los registros:', error);
+            }
+        }
+
+        async function editarRegistro(id) {
+            try {
+                const registro = await apiGetById(id);
+                if (!registro) { alert('Registro no encontrado'); return; }
+
+                document.getElementById('nombre').value = registro.nombre || '';
+                if (document.getElementById('apellido')) document.getElementById('apellido').value = registro.apellido || '';
+                document.getElementById('cumpleanos').value = registro.fecha_nacimiento || '';
+                document.getElementById('horaInicio').value = registro.hora_inicio || '';
+                document.getElementById('periodoInicio').value = registro.periodo_inicio || 'AM';
+                document.getElementById('horaFin').value = registro.hora_fin || '';
+                document.getElementById('periodoFin').value = registro.periodo_fin || 'PM';
+                const categorias = (registro.dias_trabajo || '').split(', ');
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = categorias.includes(cb.value));
+
+                document.getElementById('editIndex').value = registro.id;
+            } catch (error) {
+                console.error(error);
+                alert('Error al obtener el registro');
+            }
+        }
+
+        async function eliminarRegistro(id) {
+            if (!confirm('¿Está seguro de eliminar este registro?')) return;
+            try {
+                const result = await apiDelete(id);
+                if (result.success) actualizarTabla(); else alert('Error: ' + (result.message || ''));
+            } catch (error) {
+                console.error(error);
+                alert('Error al eliminar');
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('registroForm').reset();
+            document.getElementById('editIndex').value = '-1';
+        }
+
+        document.getElementById('registroForm').addEventListener('submit', guardarRegistro);
+        actualizarTabla();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            // Configuración de estilos
+            doc.setFontSize(18);
+            doc.setTextColor(44, 62, 80);
+            doc.text('Registro de Programación - RJA Radio', 15, 20);
+
+            // Agrupar registros por categoría
+            const registrosPorCategoria = {};
+            registros.forEach(registro => {
+                // asegurarse de usar la clave que viene del servidor
+                const categorias = (registro.dias_trabajo || registro.categoria || '').split(', ');
+                categorias.forEach(cat => {
+                    if (!registrosPorCategoria[cat]) {
+                        registrosPorCategoria[cat] = [];
+                    }
+                    registrosPorCategoria[cat].push(registro);
+                });
+            });
+
+            let yPos = 30;
+            const categoriasOrdenadas = Object.keys(registrosPorCategoria).sort();
+
+            categoriasOrdenadas.forEach(categoria => {
+                // Título de la categoría
+                doc.setFontSize(14);
+                doc.setTextColor(52, 152, 219);
+                doc.text(categoria, 15, yPos);
+                yPos += 10;
+
+                // Datos de la tabla
+                const registrosOrdenados = registrosPorCategoria[categoria].sort((a, b) => 
+                    (a.hora_inicio || a.horaInicio || '').localeCompare(b.hora_inicio || b.horaInicio || '')
+                );
+
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Hora Inicio', 'Hora Fin', 'Nombre', 'Cumpleaños', 'Programa', 'Slogan', 'Canto Tema']],
+                    body: registrosOrdenados.map(reg => [
+                        reg.hora_inicio || reg.horaInicio,
+                        reg.hora_fin || reg.horaFin,
+                        reg.nombre,
+                        reg.fecha_nacimiento || reg.cumpleanos,
+                        reg.programa,
+                        reg.slogan,
+                        reg.cantoTema || reg.canto_tema || ''
+                    ]),
+                    theme: 'striped',
+                    headStyles: { fillColor: [44, 62, 80] },
+                    margin: { top: 10 }
+                });
+
+                yPos = doc.lastAutoTable.finalY + 15;
+
+                // Si la página está llena, agregar una nueva
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+
+            // Guardar el PDF
+            doc.save('registro-programacion-rja.pdf');
+        }
+    </script>
+</body>
+</html>

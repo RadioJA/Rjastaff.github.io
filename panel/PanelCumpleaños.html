@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Certificados - RJA Radio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(245, 246, 250, 0.9), rgba(245, 246, 250, 0.9)), url('../img/Logo_fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card-icon i {
+            font-size: 3rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="panel_admin.html" class="back-btn" style="color: white; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                <span style="margin-left: 0.5rem;">Volver</span>
+            </a>
+            <h1>Panel de Certificados</h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="cards-grid">
+            <a href="CumpleañosModerador.html" class="card">
+                <div class="card-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Cumpleaños Moderadores</h3>
+                    <p class="card-description">Ver cumpleaños de moderadores</p>
+                </div>
+            </a>
+            <a href="CumpleañosLocutor.html" class="card">
+                <div class="card-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Cumpleaños Locutores</h2>
+                    <p class="card-description">Generar y gestionar Cumpleaños </p>
+                </div>
+            </a>
+
+            
+
+            <a href="CumpleañosDirectores.html" class="card">
+                <div class="card-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Cumpleaños Directores</h2>
+                    <p class="card-description">Generar y gestionar Cumpleaños</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

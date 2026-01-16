@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - RJA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="js/gestionUsuarios.js" defer></script>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Gestión de Usuarios</h1>
+            <a href="../panel_admin.html" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+
+        <!-- Botón para agregar nuevo usuario -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#userModal">
+            <i class="bi bi-person-plus"></i> Agregar Usuario
+        </button>
+
+        <!-- Tabla de usuarios -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Permisos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Los usuarios se cargarán dinámicamente aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal para crear/editar usuario -->
+        <div class="modal fade" id="userModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Nuevo Usuario</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="userForm">
+                            <input type="hidden" id="userId">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Nombre de Usuario</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="password">
+                                <small class="text-muted">Dejar en blanco para mantener la contraseña actual al editar</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Rol</label>
+                                <select class="form-select" id="role" required>
+                                    <option value="admin">Administrador</option>
+                                    <option value="director">Director</option>
+                                    <option value="locutor">Locutor</option>
+                                    <option value="moderador">Moderador</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Permisos de Acceso</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_panel_admin" value="panel_admin.html">
+                                    <label class="form-check-label" for="permiso_panel_admin">Panel Administrativo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_directiva" value="directiva_general.html">
+                                    <label class="form-check-label" for="permiso_directiva">Directiva General</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_registro_directores" value="Registro_Directores.html">
+                                    <label class="form-check-label" for="permiso_registro_directores">Registro de Directores</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_registro_locutores" value="Registro_Locutores.html">
+                                    <label class="form-check-label" for="permiso_registro_locutores">Registro de Locutores</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_registro_moderadores" value="Registro_Moderadores.html">
+                                    <label class="form-check-label" for="permiso_registro_moderadores">Registro de Moderadores</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_cumpleanos" value="PanelCumpleaños.html">
+                                    <label class="form-check-label" for="permiso_cumpleanos">Panel de Cumpleaños</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permiso_reportes" value="Reportes_Directores.html">
+                                    <label class="form-check-label" for="permiso_reportes">Reportes de Directores</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="saveUser()">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Verificar autenticación
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = '../../index.html';
+            }
+            loadUsers();
+        });
+
+        // Cargar usuarios
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const tableBody = document.getElementById('userTableBody');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.role}</td>
+                    <td><span class="badge bg-success">Activo</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editUser('${user.id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Guardar usuario
+        function saveUser() {
+            const userId = document.getElementById('userId').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            
+            // Recolectar permisos seleccionados
+            const permisos = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+
+            if (userId) {
+                // Editar usuario existente
+                const userIndex = users.findIndex(u => u.id === userId);
+                if (userIndex !== -1) {
+                    users[userIndex] = {
+                        ...users[userIndex],
+                        username,
+                        role,
+                        permisos,
+                        ...(password && { password })
+                    };
+                }
+            } else {
+                // Crear nuevo usuario
+                users.push({
+                    id: Date.now().toString(),
+                    username,
+                    password,
+                    role,
+                    permisos
+                });
+            }
+
+            localStorage.setItem('users', JSON.stringify(users));
+            bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+            loadUsers();
+        }
+
+        // Editar usuario
+        function editUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                document.getElementById('userId').value = user.id;
+                document.getElementById('username').value = user.username;
+                document.getElementById('password').value = '';
+                document.getElementById('role').value = user.role;
+                
+                // Marcar los permisos del usuario
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = user.permisos ? user.permisos.includes(checkbox.value) : false;
+                });
+                document.getElementById('modalTitle').textContent = 'Editar Usuario';
+                new bootstrap.Modal(document.getElementById('userModal')).show();
+            }
+        }
+
+        // Eliminar usuario
+        function deleteUser(userId) {
+            if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                users = users.filter(u => u.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                loadUsers();
+            }
+        }
+
+        // Limpiar formulario al abrir modal para nuevo usuario
+        document.getElementById('userModal').addEventListener('show.bs.modal', function(event) {
+            if (!event.relatedTarget.closest('.btn-warning')) {
+                document.getElementById('userForm').reset();
+                document.getElementById('userId').value = '';
+                document.getElementById('modalTitle').textContent = 'Nuevo Usuario';
+            }
+        });
+    </script>
+</body>
+</html>

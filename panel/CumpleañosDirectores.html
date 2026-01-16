@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cumpleaños Directores - RJA Radio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(245, 246, 250, 0.9), rgba(245, 246, 250, 0.9)), url('../img/Logo_fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .birthday-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .birthday-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .birthday-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card-header i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .no-birthdays {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="../panel/PanelCumpleaños.html" class="back-btn" style="color: white; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver</span>
+            </a>
+            <h1>Cumpleaños Directores</h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="birthday-cards" id="birthdayCards">
+            <!-- Las tarjetas de cumpleaños se generarán dinámicamente aquí -->
+        </div>
+    </div>
+
+    <script>
+        const isLocal = window.location.protocol === 'file:';
+
+        async function fetchDirectores() {
+            try {
+                if (!isLocal) {
+                    const res = await fetch('../database/directores.php');
+                    if (!res.ok) throw new Error('Error en API directores: ' + res.status);
+                    return await res.json();
+                }
+                return JSON.parse(localStorage.getItem('directores_data') || '[]');
+            } catch (e) {
+                console.error('fetchDirectores error:', e);
+                return [];
+            }
+        }
+
+        function parseDateField(reg) {
+            return reg.fecha_nacimiento || reg.fechaNacimiento || reg.fecha || reg.fechaNacimiento || '';
+        }
+
+        function isToday(dateStr) {
+            if (!dateStr) return false;
+            const parts = dateStr.split('-');
+            if (parts.length < 3) return false;
+            const day = parseInt(parts[2], 10);
+            const month = parseInt(parts[1], 10);
+            const today = new Date();
+            return day === today.getDate() && (month - 1) === today.getMonth();
+        }
+
+        async function mostrarCumpleHoy() {
+            const contenedor = document.getElementById('birthdayCards');
+            const directores = await fetchDirectores();
+
+            if (!directores || directores.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="no-birthdays">
+                        <i class="fas fa-calendar-times" style="font-size: 3rem; color: #2c3e50; margin-bottom: 1rem;"></i>
+                        <h2>No hay directores registrados</h2>
+                        <p>Por favor, registre algunos directores primero.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const cumpleHoy = (directores || []).filter(d => isToday(parseDateField(d)));
+
+            if (!cumpleHoy || cumpleHoy.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="no-birthdays">
+                        <i class="fas fa-birthday-cake"></i>
+                        <h2>No hay cumpleaños hoy</h2>
+                        <p>Ningún director cumple años en el día de hoy.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            contenedor.innerHTML = cumpleHoy.map(director => {
+                const name = (director.nombre || '') + (director.apellido ? ' ' + director.apellido : '');
+                const dateStr = parseDateField(director);
+                const day = dateStr.split('-')[2] || '';
+                return `
+                    <div class="birthday-card">
+                        <div class="card-header">
+                            <i class="fas fa-user-tie"></i>
+                            <h2>¡Feliz Cumpleaños!</h2>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">${name || 'Director'}</h3>
+                            <p class="card-program">Día: ${day}</p>
+                            <p>¡Te deseamos un día maravilloso!</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.addEventListener('load', mostrarCumpleHoy);
+    </script>
+</body>
+</html>

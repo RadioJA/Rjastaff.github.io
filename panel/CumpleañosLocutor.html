@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cumpleaños Locutores - RJA Radio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(245, 246, 250, 0.9), rgba(245, 246, 250, 0.9)), url('../img/Logo_fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .birthday-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .birthday-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .birthday-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card-header i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-program {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .no-birthdays {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-birthdays i {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .no-birthdays h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-birthdays p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="../panel/PanelCumpleaños.html" class="back-btn" style="color: white; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                <span style="margin-left: 0.5rem;">Volver</span>
+            </a>
+            <h1>Cumpleaños Locutores</h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="birthdayContainer" class="birthday-cards">
+            <!-- Las tarjetas de cumpleaños se generarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        const isLocal = window.location.protocol === 'file:';
+
+        async function fetchLocutores() {
+            try {
+                if (!isLocal) {
+                    const res = await fetch('../database/locutores.php');
+                    if (!res.ok) throw new Error('Error en la API: ' + res.status);
+                    return await res.json();
+                }
+                return JSON.parse(localStorage.getItem('locutores_data') || '[]');
+            } catch (e) {
+                console.error('fetchLocutores error:', e);
+                return [];
+            }
+        }
+
+        async function checkBirthdays() {
+            const registros = await fetchLocutores();
+            const today = new Date();
+            const container = document.getElementById('birthdayContainer');
+
+            try {
+                const birthdayPeople = (registros || []).filter(registro => {
+                    const dateStr = registro.fecha_nacimiento || registro.cumpleanos || registro.fecha || '';
+                    if (!dateStr) return false;
+                    const parts = dateStr.split('-');
+                    if (parts.length < 3) return false;
+                    const year = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    const day = parseInt(parts[2], 10);
+                    return day === today.getDate() && (month - 1) === today.getMonth();
+                });
+
+                if (!birthdayPeople || birthdayPeople.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-birthdays">
+                            <i class="fas fa-birthday-cake"></i>
+                            <h2>No hay cumpleaños hoy</h2>
+                            <p>Ningún locutor cumple años en el día de hoy.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = birthdayPeople.map(person => `
+                    <div class="birthday-card">
+                        <div class="card-header">
+                            <i class="fas fa-microphone"></i>
+                            <h2>¡Feliz Cumpleaños!</h2>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">${(person.nombre || '') + (person.apellido ? ' ' + person.apellido : '') || 'Locutor'}</h3>
+                            <p class="card-program">Programa: ${person.programa || person.programa || 'No especificado'}</p>
+                            <p>¡Te deseamos un día maravilloso!</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error al procesar cumpleaños:', error);
+                container.innerHTML = `
+                    <div class="no-birthdays">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h2>Error al cargar los datos</h2>
+                        <p>No se pudieron cargar los datos de cumpleaños.</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.addEventListener('load', checkBirthdays);
+    </script>
+</body>
+</html>
