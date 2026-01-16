@@ -198,7 +198,7 @@
             const today = new Date();
             const day = today.getDate();
             const month = today.getMonth() + 1; // 1-12
-            const isLocal = window.location.protocol === 'file:';
+            const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
             function parseDateField(item) {
                 return item.fecha_nacimiento || item.fechaNacimiento || item.cumpleanos || item.fechaCumpleanos || item.fecha || '';

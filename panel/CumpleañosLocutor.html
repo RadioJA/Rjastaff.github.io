@@ -125,7 +125,7 @@
     </div>
 
     <script>
-        const isLocal = window.location.protocol === 'file:';
+        const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
         async function fetchLocutores() {
             try {
